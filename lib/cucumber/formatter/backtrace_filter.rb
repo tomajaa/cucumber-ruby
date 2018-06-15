@@ -19,7 +19,9 @@ module Cucumber
 
     @backtrace_filters << 'org/jruby/' if ::Cucumber::JRUBY
 
-    BACKTRACE_FILTER_PATTERNS = Regexp.new(@backtrace_filters.join('|'))
+    BACKTRACE_FILTER_PATTERNS = Regexp.new(
+      ENV['CUCUMBER_BACKTRACE_FILTERS'] || @backtrace_filters.join('|')
+    )
 
     class BacktraceFilter
       def initialize(exception)

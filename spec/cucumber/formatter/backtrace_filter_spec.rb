@@ -24,6 +24,34 @@ module Cucumber
           BacktraceFilter.new(@exception).exception
           expect(@exception.backtrace).to eql %w[a b]
         end
+
+        context 'when configured through environment variable' do
+          let(:backtrace_filters) do
+            %w[
+              /vendor/rails
+              lib/cucumber
+              bin/cucumber:
+              lib/rspec
+              minitest
+              test/unit
+              .gem/ruby
+              lib/ruby/
+              bin/bundle
+            ]
+          end
+
+          before do
+            stub_const(
+              'Cucumber::Formatter::BACKTRACE_FILTER_PATTERNS',
+              Regexp.new(backtrace_filters.join('|'))
+            )
+          end
+
+          it 'filters configured traces only' do
+            BacktraceFilter.new(@exception).exception
+            expect(@exception.backtrace).to eql %w[a b _anything__gems/__anything_]
+          end
+        end
       end
     end
   end
